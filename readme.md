@@ -39,8 +39,3 @@
 
      o If you want freely available support for running the library,please see the
        resources at <http://qulib.org>
-
-     o If you have a concrete bug report for Qulib please see the instructions
-       for bug reporting at <http://qulib.org/bug_report.html>
-
-

@@ -22,11 +22,12 @@
 */
 
 #ifndef __QFT_H
-
 #define __QFT_H
 
-extern void quantum_qft_qft(int width, quantum_qft_reg *reg);
-
-extern void quantum_qft_qft_mpi(int width, quantum_qft_reg *reg);
+void quantum_qft_qft(int width, quantum_qft_reg *reg);
+void quantum_mpi_cnot(int control, int target, quantum_qft_reg *reg);
+void quantum_mpi_sigma_x(int target, quantum_qft_reg *reg);
+void quantum_mpi_toffoli(int control1, int control2, int target, quantum_qft_reg *reg);
+void quantum_mpi_sigma_y(int target, quantum_qft_reg *reg);
 
 #endif

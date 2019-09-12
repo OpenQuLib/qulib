@@ -38,7 +38,7 @@
 #endif
 
 #ifndef IMAGINARY
-  #define IMAGINARY 1i
+  #define IMAGINARY _Complex_I
 #endif
 
 #endif

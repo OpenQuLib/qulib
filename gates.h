@@ -22,22 +22,14 @@
 */
 
 #ifndef __GATES_H
-
 #define __GATES_H
 
 #include "matrix.h"
 #include "qureg.h"
 
-extern void quantum_qft_gate1(int target, quantum_matrix m, quantum_qft_reg *reg);
-
-extern void quantum_qft_gate1_mpi(int target, quantum_matrix m, quantum_qft_reg *reg);
-
-extern void quantum_qft_hadamard(int target, quantum_qft_reg *reg);
-
-extern void quantum_qft_hadamard_mpi(int target, quantum_qft_reg *reg);
-
-extern void quantum_qft_cond_phase(int control, int target, quantum_qft_reg *reg);
-
-extern void quantum_qft_cond_phase_mpi(int control, int target, quantum_qft_reg *reg);
+void quantum_qft_gate1(int target, quantum_matrix m, quantum_qft_reg *reg);
+void quantum_qft_hadamard(int target, quantum_qft_reg *reg);
+void quantum_qft_cond_phase(int control, int target, quantum_qft_reg *reg);
+int quantum_qft_get_state(MAX_UNSIGNED num,quantum_qft_reg *reg);
 
 #endif

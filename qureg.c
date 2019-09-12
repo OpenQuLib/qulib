@@ -25,69 +25,52 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <mpi.h>
 
 #include "matrix.h"
 #include "qureg.h"
 #include "config.h"
-#include "complex.h"
+#include "complex_q.h"
 #include "error.h"
 
 /* Create a new quantum register from scratch */
 quantum_qft_reg
-quantum_new_qft_reg(MAX_UNSIGNED initval, int width) {
-	quantum_qft_reg qr;
+quantum_new_qft_reg(int width, int id, int r, float k)
+{
+	long long i;
+	quantum_qft_reg  qr;
 	qr.width = width;
+
 	qr.amplitude = calloc(1 << width, sizeof(COMPLEX_FLOAT));
-	qr.amplitude[initval]=1;
 
-	return qr;
-}
-
-quantum_qft_reg
-quantum_new_qft_reg_mpi(MAX_UNSIGNED initval, int width) {
-	int id, procs, length;
-
-	length = 1 << width;
-
-	MPI_Comm_rank(MPI_COMM_WORLD, &id);
-
-	procs = initval / length;
-	quantum_qft_reg qr;
-	qr.width = width;
-	qr.amplitude = calloc(length, sizeof(COMPLEX_FLOAT));
-
-	if(id == procs) {  
-	qr.amplitude[initval % length] = 1;
+	i = (r - (id*(1<<width))%r)%r;
+	for(; i<(1<<width); i+=r){
+		qr.amplitude[i] = sqrt(1.0/k);
 	}
-	MPI_Barrier(MPI_COMM_WORLD);
 
 	return qr;
 }
+
 
 void
-quantum_qft_print_reg(quantum_qft_reg *reg){
+quantum_qft_print_reg(quantum_qft_reg *reg,int id){
 	int j;
 	MAX_UNSIGNED i;
 	for(i=0; i<(1<<reg->width); i++)
 	{
-		// if(quantum_prob_inline(reg->amplitude[i])==0)
-		//   continue;
-		printf("% f %+fi|%lli> (%e) (|", quantum_real(reg->amplitude[i]),
-			quantum_imag(reg->amplitude[i]), i,
-			quantum_prob_inline(reg->amplitude[i]));
-		for(j=reg->width-1;j>=0;j--) {
-			if(j % 4 == 3) {
-				printf(" ");
-			}
-			printf("%i", ((((MAX_UNSIGNED) 1 << j) & i) > 0));
+		if(quantum_prob_inline(reg->amplitude[i])<0.0001) {
+			continue;
 		}
+		printf("%d: % f %+fi|%lli> (%e) (|", id,quantum_real(reg->amplitude[i]), 
+			quantum_imag(reg->amplitude[i]), i+id*(1<<reg->width), 
+			quantum_prob_inline(reg->amplitude[i]));
+
 		printf(">)\n");
 	}
 	printf("\n");
 }
 
-void quantum_qft_delete_qureg(quantum_qft_reg *reg)
+void
+quantum_qft_delete_qureg(quantum_qft_reg *reg)
 {
 	if(reg->amplitude){
 		free(reg->amplitude);

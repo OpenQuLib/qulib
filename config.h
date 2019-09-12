@@ -22,6 +22,9 @@
 
 */
 
+#ifndef __CONFIG_H
+#define __CONFIG_H
+
 /* Complex data type */
 #define COMPLEX_FLOAT float _Complex
 
@@ -62,7 +65,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Imaginary unit */
-#define IMAGINARY 1i
+#define IMAGINARY _Complex_I
 
 /* Integer type for quantum registers */
 #define MAX_UNSIGNED unsigned long long
@@ -99,3 +102,5 @@
 /* #undef USE_DOUBLE */
 
 #include "types.h"
+
+#endif

@@ -1,6 +1,6 @@
-/* qureg.h: Declarations for qureg.c and inline hashing functions
+/* complex.h: Declarations for complex.c
 
-   Copyright 2003-2013 Bjoern Butscher, Hendrik Weimer
+   Copyright 2003 Bjoern Butscher, Hendrik Weimer
 
    This file is part of libquantum
 
@@ -21,29 +21,34 @@
 
 */
 
-#ifndef __QUREG_H
-#define __QUREG_H
+#ifndef __COMPLEX_Q_H
 
-#include <sys/types.h>
+#define __COMPLEX_Q_H
 
+#include <complex.h>
 #include "config.h"
-#include "matrix.h"
-#include "error.h"
 
-/* The quantum register */
-struct quantum_qft_reg_struct
+//#define quantum_conj(z) (conj(z))
+#define quantum_conj(z) (((float *)&z)[0] - ((float *)&z)[1] * I)
+//#define quantum_real(z) (creal(z))
+#define quantum_real(z) (((float *)&z)[0])
+//#define quantum_imag(z) (cimag(z))
+#define quantum_imag(z) (((float *)&z)[1])
+
+extern double quantum_prob (COMPLEX_FLOAT a);
+extern COMPLEX_FLOAT quantum_cexp(REAL_FLOAT phi);
+
+/* Calculate the square of a complex number (i.e. the probability) */
+
+static inline double
+quantum_prob_inline(COMPLEX_FLOAT a)
 {
-	int width;
-	int g_width;
-	int master_i;
-	int master_j;
-	int master_id;
-	COMPLEX_FLOAT *amplitude;
-};
-typedef struct quantum_qft_reg_struct quantum_qft_reg;
+  REAL_FLOAT r, i;
 
-quantum_qft_reg quantum_new_qft_reg(int width, int id, int r, float k);
-void quantum_qft_print_reg(quantum_qft_reg *reg,int id);
-void quantum_qft_delete_qureg(quantum_qft_reg *reg);
+  r = quantum_real(a);
+  i = quantum_imag(a);
+
+  return r * r + i * i;
+}
 
 #endif

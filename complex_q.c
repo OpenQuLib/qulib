@@ -1,6 +1,6 @@
-/* qureg.h: Declarations for qureg.c and inline hashing functions
+/* complex.c: Complex number functions
 
-   Copyright 2003-2013 Bjoern Butscher, Hendrik Weimer
+   Copyright 2003 Bjoern Butscher, Hendrik Weimer
 
    This file is part of libquantum
 
@@ -21,29 +21,36 @@
 
 */
 
-#ifndef __QUREG_H
-#define __QUREG_H
+#include <math.h>
+#include <complex.h>
 
-#include <sys/types.h>
-
+#include "complex_q.h"
 #include "config.h"
-#include "matrix.h"
-#include "error.h"
 
-/* The quantum register */
-struct quantum_qft_reg_struct
+/* Return the complex conjugate of a complex number */
+
+/*COMPLEX_FLOAT
+quantum_conj(COMPLEX_FLOAT a)
 {
-	int width;
-	int g_width;
-	int master_i;
-	int master_j;
-	int master_id;
-	COMPLEX_FLOAT *amplitude;
-};
-typedef struct quantum_qft_reg_struct quantum_qft_reg;
+  REAL_FLOAT r, i;
 
-quantum_qft_reg quantum_new_qft_reg(int width, int id, int r, float k);
-void quantum_qft_print_reg(quantum_qft_reg *reg,int id);
-void quantum_qft_delete_qureg(quantum_qft_reg *reg);
+  r = quantum_real(a);
+  i = quantum_imag(a);
 
-#endif
+  return r - IMAGINARY * i;
+  }*/
+
+/* Calculate the square of a complex number (i.e. the probability) */
+
+double
+quantum_prob(COMPLEX_FLOAT a)
+{
+  return quantum_prob_inline(a);
+}
+
+/* Calculate e^(i * phi) */
+
+COMPLEX_FLOAT quantum_cexp(REAL_FLOAT phi)
+{
+  return cos(phi) + IMAGINARY * sin(phi);
+}

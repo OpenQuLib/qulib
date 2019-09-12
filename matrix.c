@@ -26,7 +26,7 @@
 
 #include "matrix.h"
 #include "config.h"
-#include "complex.h"
+#include "complex_q.h"
 #include "error.h"
 
 /* Statistics of the memory consumption */
@@ -88,68 +88,61 @@ quantum_delete_matrix(quantum_matrix *m)
 void 
 quantum_print_matrix(quantum_matrix m) 
 {
-  int i, j, z=0;
-  int print_imag = 0;
-  /* int l; */
+	int i, j, z=0;
+	int print_imag = 0;
+	/* int l; */
 
-  for(i=0; i<m.rows; i++) 
-    {
-      for(j=0; j<m.cols; j++)
+	for(i=0; i<m.rows; i++) 
 	{
-	  if(quantum_imag(M(m, j, i))/quantum_real(M(m, j, i)) > 1e-3)
-	    print_imag = 1;
+		for(j=0; j<m.cols; j++)
+		{
+			if(quantum_imag(M(m, j, i))/quantum_real(M(m, j, i)) > 1e-3)
+			print_imag = 1;
+		}
 	}
-    }
 
-  while ((1 << z++) < m.rows);
-  z--;
+	while ((1 << z++) < m.rows);
+	z--;
 
-  for(i=0; i<m.rows; i++) 
-    {
-      /* for (l=z-1; l>=0; l--) 
+	for(i=0; i<m.rows; i++) 
 	{
-	  if ((l % 4 == 3))
-	    printf(" ");
-	  printf("%i", (i >> l) & 1);
-	  } */
+		for(j=0; j<m.cols; j++)
+		{
+			if(print_imag)
+				printf("%3.3f%+.3fi ", quantum_real(M(m, j, i)), 
+				quantum_imag(M(m, j, i)));
+			else
+				//	    printf("%3.3f ", quantum_real(M(m, j, i)));
+				printf("%+.1f ", quantum_real(M(m, j, i)));
+		}
 
-      for(j=0; j<m.cols; j++)
-	{
-	  if(print_imag)
-	    printf("%3.3f%+.3fi ", quantum_real(M(m, j, i)), 
-		   quantum_imag(M(m, j, i)));
-	  else
-	    //	    printf("%3.3f ", quantum_real(M(m, j, i)));
-	    printf("%+.1f ", quantum_real(M(m, j, i)));
+		printf("\n");
 	}
-	    
-      printf("\n");
-    }
-  printf("\n");
+	printf("\n");
 }
 
 /* Matrix multiplication */
 
 quantum_matrix quantum_mmult(quantum_matrix A, quantum_matrix B)
 {
-  int i, j, k;
-  quantum_matrix C;
+	int i, j, k;
+	quantum_matrix C;
 
-  if(A.cols != B.rows)
-    quantum_error(QUANTUM_EMSIZE);
-  
-  C = quantum_new_matrix(B.cols, A.rows);
+	if(A.cols != B.rows)
+	quantum_error(QUANTUM_EMSIZE);
 
-  for(i=0; i<B.cols; i++)
-    {
-      for(j=0; j<A.rows; j++)
+	C = quantum_new_matrix(B.cols, A.rows);
+
+	for(i=0; i<B.cols; i++)
 	{
-	  for(k=0; k<B.rows; k++)
-	    M(C, i, j) += M(A, k, j) * M(B, i, k);
+		for(j=0; j<A.rows; j++)
+		{
+			for(k=0; k<B.rows; k++)
+			M(C, i, j) += M(A, k, j) * M(B, i, k);
+		}
 	}
-    }
 
-  return C;
+	return C;
 }
 
 /* Compute the adjoint of a matrix */
@@ -157,18 +150,18 @@ quantum_matrix quantum_mmult(quantum_matrix A, quantum_matrix B)
 void 
 quantum_adjoint(quantum_matrix *m)
 {
-  int i, j;
-  COMPLEX_FLOAT tmp;
-  quantum_matrix A = *m;
+	int i, j;
+	COMPLEX_FLOAT tmp;
+	quantum_matrix A = *m;
 
-  for(i=0; i<m->cols; i++)
-    {
-      for(j=0;j<i;j++)
+	for(i=0; i<m->cols; i++)
 	{
-	  tmp = M(A, i, j);
-	  M(A, i, j) = quantum_conj(M(A, j, i));
-	  M(A, j, i) = quantum_conj(tmp);
+		for(j=0;j<i;j++)
+		{
+			tmp = M(A, i, j);
+			M(A, i, j) = quantum_conj(M(A, j, i));
+			M(A, j, i) = quantum_conj(tmp);
+		}
 	}
-    }
 }
 
